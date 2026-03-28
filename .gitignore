@@ -1,7 +1,44 @@
- *.pyc
+*.pyc
 __pycache__/
-# Ignorar todos los archivos .pt
+
+# Model files
 *.pt
 *.pth
+
+# Media files
 *.jpg
+*.png
+*.jpeg
+
+# Data/config
 *.json
+
+# Analysis reports & documentation (generated)
+CATALOG_*.md
+PPT_CONTENT_*.md
+VIDEO_SCRIPT_*.md
+DELIVERY_SUMMARY.md
+EXECUTIVE_SUMMARY.md
+PHASE*_*.md
+
+# Python cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environment
+.env
+venv/

@@ -2,6 +2,7 @@ from models import CATALOG_Base as base
 from models import CATALOG_Base_fine_tuning as base_fine_tuning
 from models import CATALOG_Base_fine_tuning_last_layer as base_fine_tuning_layer
 from models import CATALOG_Base_long as base_long
+from models import CATALOG_Base_modified as base_modified
 
 from models import CATALOG_Projections as projections
 from models import CATALOG_Projections_fine_tuning as projections_fine_tuning
@@ -14,6 +15,7 @@ from utils import BaselineDataset,dataloader_baseline,TuningDataset,dataloader_T
 from train.Base.Train_CATALOG_Projections_Serengeti import CATALOG_projections_serengeti
 from train.Base.Train_CATALOG_Projections_Terra import CATALOG_projections_terra
 from train.Base.Train_CATALOG_Base_out_domain import CATALOG_base
+from train.Base.Train_CATALOG_Base_modified import CATALOG_base_modified
 
 from train.Fine_tuning.Train_CATALOG_Base_In_domain_Serengeti import CATALOG_base_In_domain_serengeti
 from train.Fine_tuning.Train_CATALOG_Base_In_domain_Terra import CATALOG_base_In_domain_terra
@@ -96,9 +98,29 @@ if __name__ == "__main__":
                                                   Dataloader=dataloader_baseline,version='base',ruta_features_train=ruta_features_train,
                                                   ruta_features_val=ruta_features_val,ruta_features_test1=ruta_features_test1,
                                                   ruta_features_test2=ruta_features_test2,path_text_feat1=path_text_feat1,
-                                                  path_text_feat2=path_text_feat2,build_optimizer=build_optimizer,exp_name=f'exp_{model_version}_{train_type}')
+                                                  path_text_feat2=path_text_feat2,build_optimizer=build_optimizer,exp_name=f'exp_{model_version}_{train_type}', subset_size=10000)
 
             model_params_path = 'models/CATALOG_Base.pth'
+            mode_model(model, model_params_path, mode)
+
+    elif model_version == "Base_modified":
+        if train_type == "Out_domain":
+            ruta_features_train = "features/Features_serengeti/standard_features/Features_CATALOG_train_16.pt"
+            ruta_features_val = "features/Features_serengeti/standard_features/Features_CATALOG_val_16.pt"
+            ruta_features_test1 = "features/Features_terra/standard_features/Features_CATALOG_cis_test_16.pt"
+            ruta_features_test2 = "features/Features_terra/standard_features/Features_CATALOG_trans_test_16.pt"
+            path_text_feat1 = "features/Features_serengeti/standard_features/Text_features_16.pt"
+            path_text_feat2 = "features/Features_terra/standard_features/Text_features_16.pt"
+            model = CATALOG_base_modified(weight_Clip=0.6, num_epochs=8, batch_size=48, num_layers=1,
+                                          dropout=0.27822, hidden_dim=1045, lr=0.07641, t=0.1, momentum=0.8409
+                                          , patience=5, model=base_modified, Dataset=BaselineDataset,
+                                          Dataloader=dataloader_baseline, version='base_modified', ruta_features_train=ruta_features_train,
+                                          ruta_features_val=ruta_features_val, ruta_features_test1=ruta_features_test1,
+                                          ruta_features_test2=ruta_features_test2, path_text_feat1=path_text_feat1,
+                                          path_text_feat2=path_text_feat2, build_optimizer=build_optimizer,
+                                          exp_name=f'exp_{model_version}_{train_type}', subset_size=10000)
+
+            model_params_path = 'models/CATALOG_Base_modified.pth'
             mode_model(model, model_params_path, mode)
 
     elif model_version == "Fine_tuning":
@@ -246,5 +268,5 @@ if __name__ == "__main__":
             model_params_path = 'models/CATALOG_Base_long.pth'
             mode_model(model, model_params_path, mode)
 
-
+ 
 

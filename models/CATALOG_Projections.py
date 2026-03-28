@@ -9,9 +9,9 @@ class QuickGELU(nn.Module):
 class Projection(nn.Module):
     def __init__(self, d_in: int, d_out: int, p: float = 0.5) -> None:
         super().__init__()
-        self.linear1 = nn.Linear(d_in, d_out, bias=False).half()
-        self.linear2 = nn.Linear(d_out, d_out, bias=False).half()
-        self.layer_norm = nn.LayerNorm(d_out).half()
+        self.linear1 = nn.Linear(d_in, d_out, bias=False)
+        self.linear2 = nn.Linear(d_out, d_out, bias=False)
+        self.layer_norm = nn.LayerNorm(d_out)
         self.drop = nn.Dropout(p)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -142,14 +142,14 @@ class LLaVA_CLIP(nn.Module):
         sim_clip= img_feat @ text_feat.t()
         sim_clip = sim_clip / sim_clip.norm(dim=-1, keepdim=True)
 
-        sim_bert = description_feat.half()  @ text_feat.t()
+        sim_bert = description_feat @ text_feat.t()
         sim_bert = sim_bert / sim_bert.norm(dim=-1, keepdim=True)
 
         sim_total=sim_clip*weight_p+sim_bert*(1-weight_p)
         sim_total = sim_total / sim_total.norm(dim=-1, keepdim=True)
         
         predicted_index = torch.argmax(sim_total, dim=1)
-        acc = torch.sum(predicted_index.cpu() == target_ind)
+        acc = torch.sum(predicted_index == target_ind.to(predicted_index.device))
         return acc
 
     def forward(self, embeddings, img_features, txt_features, weight_p,target_ind,temp):
@@ -171,7 +171,7 @@ class LLaVA_CLIP(nn.Module):
 
         logit_scale_LLaVA = self.logit_scale_LLaVA.exp()
 
-        similarity_bert = (description_features.half() @ p_txt_features.t()) * logit_scale_LLaVA
+        similarity_bert = (description_features @ p_txt_features.t()) * logit_scale_LLaVA
         similarity_bert = similarity_bert / similarity_bert.norm(dim=-1, keepdim=True)
 
         similarity = (similarity_clip * weight_p + similarity_bert * (1 - weight_p))
@@ -200,7 +200,7 @@ class LLaVA_CLIP(nn.Module):
 
         logit_scale_LLaVA = self.logit_scale_LLaVA.exp()
 
-        similarity_bert = (description_features.half() @ p_txt_features.t()) * logit_scale_LLaVA
+        similarity_bert = (description_features @ p_txt_features.t()) * logit_scale_LLaVA
         similarity_bert = similarity_bert / similarity_bert.norm(dim=-1, keepdim=True)
 
         similarity = (similarity_clip * weight_p + similarity_bert * (1 - weight_p))
@@ -232,7 +232,7 @@ class LLaVA_CLIP(nn.Module):
 
         logit_scale_LLaVA = self.logit_scale_LLaVA.exp()
 
-        similarity_bert = (description_features.half() @ p_txt_features.t()) * logit_scale_LLaVA
+        similarity_bert = (description_features @ p_txt_features.t()) * logit_scale_LLaVA
         similarity_bert = similarity_bert / similarity_bert.norm(dim=-1, keepdim=True)
 
         similarity = (similarity_clip * weight_p + similarity_bert * (1 - weight_p))

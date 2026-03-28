@@ -55,12 +55,12 @@ class CATALOG_projections_serengeti:
         device = "cuda" if torch.cuda.is_available() else "cpu"
 
         text_features=torch.load(self.path_text_feat)
-        text_features = text_features.to(device)
+        text_features = text_features.float().to(device)
 
 
 
         projection_model = self.md.LLaVA_CLIP(hidden_dim=self.hidden_dim, num_layers=self.num_layers, dropout=self.dropout,device=device)
-        projection_model = projection_model.to(device)
+        projection_model = projection_model.float().to(device)
 
         #DataLoader
         dataloader = self.dataloader(self.ruta_features_train, self.batch_size,self.dataset)
@@ -81,8 +81,9 @@ class CATALOG_projections_serengeti:
             for batch in dataloader:
                 image_features, description_embeddings, target_index = batch
                 size+=len(image_features)
-                image_features=image_features.to(device)
-                description_embeddings = description_embeddings.to(device)
+                image_features=image_features.float().to(device)
+                description_embeddings = description_embeddings.float().to(device)
+                target_index = target_index.to(device)
 
 
                 loss, acc,_ = projection_model(description_embeddings, image_features, text_features, self.weight_Clip,target_index,self.t)
@@ -112,8 +113,9 @@ class CATALOG_projections_serengeti:
                 for batch_val in dataloader_val:
                     image_features_val, description_embeddings_val, target_index_val = batch_val
                     size_val+=len(image_features_val)
-                    image_features_val = image_features_val.to(device)
-                    description_embeddings_val = description_embeddings_val.to(device)
+                    image_features_val = image_features_val.float().to(device)
+                    description_embeddings_val = description_embeddings_val.float().to(device)
+                    target_index_val = target_index_val.to(device)
 
 
 
@@ -156,7 +158,7 @@ class CATALOG_projections_serengeti:
             if epoch==(self.num_epochs-1) or counter >= self.patience:
                 projection_model = self.md.LLaVA_CLIP(hidden_dim=self.hidden_dim, num_layers=self.num_layers, dropout=self.dropout,device=device)
                 projection_model.load_state_dict(torch.load(model_params_path))
-                projection_model = projection_model.to(device)
+                projection_model = projection_model.float().to(device)
                 projection_model.eval()
 
                 running_loss_test = 0
@@ -174,8 +176,9 @@ class CATALOG_projections_serengeti:
                     for batch_test in dataloader_test:
                         image_features_test, description_embeddings_test, target_index_test = batch_test
                         size_test += len(image_features_test)
-                        image_features_test = image_features_test.to(device)
-                        description_embeddings_test = description_embeddings_test.to(device)
+                        image_features_test = image_features_test.float().to(device)
+                        description_embeddings_test = description_embeddings_test.float().to(device)
+                        target_index_test = target_index_test.to(device)
 
 
                         loss_test, acc_test,preds_test = projection_model(description_embeddings_test,

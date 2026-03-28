@@ -1,0 +1,11 @@
+,Pred_aardvark,Pred_antelope,Pred_baboon,Pred_badger,Pred_bat,Pred_bear,Pred_bee-eater,Pred_bird,Pred_boar,Pred_buffalo
+True_aardvark,334,0,0,1,0,0,0,0,0,0
+True_antelope,1,313,7,4,0,2,1,0,1,0
+True_baboon,1,3,317,6,3,0,0,0,2,0
+True_badger,0,0,0,325,0,1,0,0,0,0
+True_bat,0,0,0,1,331,0,0,0,0,0
+True_bear,0,2,0,1,0,339,0,0,0,0
+True_bee-eater,1,0,0,0,0,0,179,0,0,0
+True_bird,1,0,0,2,1,0,0,176,0,0
+True_boar,0,0,2,2,0,0,0,0,176,0
+True_buffalo,2,0,0,2,1,0,0,0,0,175
